@@ -1,0 +1,16 @@
+{
+  "name": "rocketmq-doc-cn",
+  "version": "1.0.0",
+  "description": "rocketmq 中文文档",
+  "main": "index.js",
+  "scripts": {
+    "start": "vuepress dev",
+    "build": "vuepress build"
+  },
+  "author": "qinaichen",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "vuepress": "^0.5.1"
+  },
+  "dependencies": {}
+}
