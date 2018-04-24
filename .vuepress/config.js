@@ -1,5 +1,6 @@
 module.exports = {
     title: 'Apache RocketMQ',
+    base: '/rocketmq-doc-dn/',
     themeConfig:{
 
         sidebar:{
