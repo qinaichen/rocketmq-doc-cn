@@ -8,7 +8,9 @@ module.exports = {
                 children:[
                     '/user-guide/Why',
                     '/user-guide/quick-start',
-                    '/user-guide/simple-example'
+                    '/user-guide/simple-example',
+                    '/user-guide/order-example',
+                    'user-guide/broadcasting-example'
                 ]
             }]
         }
