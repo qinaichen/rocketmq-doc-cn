@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Apache RocketMQ | 快速入门</title>
+    
+    
+    <link rel="preload" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css" as="style"><link rel="preload" href="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" as="script"><link rel="preload" href="/rocketmq-doc-cn/assets/js/2.6375ad30.js" as="script"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/5.640eb283.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/1.479f88f1.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/3.6887b212.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/4.a33cbc1b.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/0.17fe6cb5.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/6.efdd77ba.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/7.2a416308.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/8.d8dfca2d.js">
+    <link rel="stylesheet" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/rocketmq-doc-cn/" class="router-link-active"><!----><span class="site-name">
+      Apache RocketMQ
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><!----></div></header><div class="sidebar"><!----><ul class="sidebar-links"><li><div class="sidebar-group first collapsable"><p class="sidebar-heading open"><span>用户指南</span><span class="arrow up"></span></p><ul class="sidebar-group-items"><li><a href="/rocketmq-doc-cn/user-guide/Why.html" class="sidebar-link">Why RocketMQ</a></li><li><a href="/rocketmq-doc-cn/user-guide/quick-start.html" class="active sidebar-link">快速入门</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/rocketmq-doc-cn/user-guide/simple-example.html" class="sidebar-link">简单范例</a></li><li><a href="/rocketmq-doc-cn/user-guide/order-example.html" class="sidebar-link">有序消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/broadcasting-example.html" class="sidebar-link">广播</a></li><li><a href="/rocketmq-doc-cn/user-guide/schedule-example.html" class="sidebar-link">延时消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/batch-example.html" class="sidebar-link">消息批处理</a></li><li><a href="/rocketmq-doc-cn/user-guide/filter-example.html" class="sidebar-link">消息过滤</a></li></ul></div></li></ul></div><div class="page"><div class="content"><p>这里我们将详细的介绍如何在本机安装部署<code>RocketMQ</code>，然后进行发送和接收消息</p><h3 id="系统要求"><a href="#系统要求" aria-hidden="true" class="header-anchor">#</a> 系统要求</h3><p>环境要求：</p><ol><li>64位操作系统，推荐使用<code>Linux</code>、<code>Unix</code>、<code>Mac</code></li><li>64位 Jdk 1.8以上版本</li><li>Maven3.2.x</li><li>Git</li></ol><h4 id="下载编译发行版"><a href="#下载编译发行版" aria-hidden="true" class="header-anchor">#</a> 下载编译发行版</h4><p>点击 <a href="https://www.apache.org/dyn/closer.cgi?path=rocketmq/4.2.0/rocketmq-all-4.2.0-source-release.zip" target="_blank" rel="noopener noreferrer">这里</a>
+下载<code>4.2.0</code>发行版源码，或者也可以<a href="http://rocketmq.apache.org/release_notes/release-notes-4.2.0/" target="_blank" rel="noopener noreferrer">下载</a>发布包</p><p>执行下面的命令解压源码包，然后进行编译</p><pre class="language-text"><code>unzip rocketmq-all-4.2.0-source-release.zip
+cd rocketmq-all-4.2.0/
+mvn -Prelease-all -DskipTests clean install -U
+cd distribution/target/apache-rocketmq
+</code></pre><h4 id="启动name-server"><a href="#启动name-server" aria-hidden="true" class="header-anchor">#</a> 启动Name Server</h4><pre class="language-text"><code>nohup sh bin/mqnamesrv &amp;
+</code></pre><p>查看日志</p><pre class="language-text"><code>tail -f ~/logs/rocketmqlogs/namesrv.log
+</code></pre><blockquote><p>The Name Server boot success…</p></blockquote><h4 id="启动broker"><a href="#启动broker" aria-hidden="true" class="header-anchor">#</a> 启动Broker</h4><pre class="language-text"><code>nohup sh bin/mqbroker -n localhost:9876 &amp;
+</code></pre><p>查看日志</p><pre class="language-text"><code>tail -f ~/logs/rocketmqlogs/broker.log
+</code></pre><blockquote><p>The broker[%s, 172.30.30.233:10911] boot success…</p></blockquote><h4 id="发送、接收消息"><a href="#发送、接收消息" aria-hidden="true" class="header-anchor">#</a> 发送、接收消息</h4><p>在发送和接收消息之前，我们需要告诉客户端 name server 的位置。<code>RocketMQ</code>提供了多种实现方式，简单起见，我们设置环境变量<code>NAMESRV_ADDR</code></p><pre class="language-text"><code>&gt; export NAMESRV_ADDR=localhost:9876
+&gt; sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
+
+ SendResult [sendStatus=SEND_OK, msgId= ...
+
+&gt; sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
+
+ ConsumeMessageThread_%d Receive New Messages: [MessageExt...
+</code></pre><h3 id="停止服务"><a href="#停止服务" aria-hidden="true" class="header-anchor">#</a> 停止服务</h3><pre class="language-text"><code>&gt; sh bin/mqshutdown broker
+The mqbroker(36695) is running...
+Send shutdown request to mqbroker(36695) OK
+
+&gt; sh bin/mqshutdown namesrv
+The mqnamesrv(36664) is running...
+Send shutdown request to mqnamesrv(36664) OK
+</code></pre></div><!----><div class="content page-nav"><p class="inner"><span class="prev">
+        ← <a href="/rocketmq-doc-cn/user-guide/Why.html" class="prev">
+          Why RocketMQ
+        </a></span><span class="next"><a href="/rocketmq-doc-cn/user-guide/simple-example.html">
+          简单范例
+        </a> →
+      </span></p></div></div></div></div>
+    <script src="/rocketmq-doc-cn/assets/js/2.6375ad30.js" defer></script><script src="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" defer></script>
+  </body>
+</html>

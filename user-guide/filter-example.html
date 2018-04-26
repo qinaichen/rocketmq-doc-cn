@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Apache RocketMQ | 消息过滤</title>
+    
+    
+    <link rel="preload" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css" as="style"><link rel="preload" href="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" as="script"><link rel="preload" href="/rocketmq-doc-cn/assets/js/4.a33cbc1b.js" as="script"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/5.640eb283.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/1.479f88f1.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/2.6375ad30.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/3.6887b212.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/0.17fe6cb5.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/6.efdd77ba.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/7.2a416308.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/8.d8dfca2d.js">
+    <link rel="stylesheet" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/rocketmq-doc-cn/" class="router-link-active"><!----><span class="site-name">
+      Apache RocketMQ
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><!----></div></header><div class="sidebar"><!----><ul class="sidebar-links"><li><div class="sidebar-group first collapsable"><p class="sidebar-heading open"><span>用户指南</span><span class="arrow up"></span></p><ul class="sidebar-group-items"><li><a href="/rocketmq-doc-cn/user-guide/Why.html" class="sidebar-link">Why RocketMQ</a></li><li><a href="/rocketmq-doc-cn/user-guide/quick-start.html" class="sidebar-link">快速入门</a></li><li><a href="/rocketmq-doc-cn/user-guide/simple-example.html" class="sidebar-link">简单范例</a></li><li><a href="/rocketmq-doc-cn/user-guide/order-example.html" class="sidebar-link">有序消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/broadcasting-example.html" class="sidebar-link">广播</a></li><li><a href="/rocketmq-doc-cn/user-guide/schedule-example.html" class="sidebar-link">延时消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/batch-example.html" class="sidebar-link">消息批处理</a></li><li><a href="/rocketmq-doc-cn/user-guide/filter-example.html" class="active sidebar-link">消息过滤</a><ul class="sidebar-sub-headers"></ul></li></ul></div></li></ul></div><div class="page"><div class="content"><h3 id="消息过滤"><a href="#消息过滤" aria-hidden="true" class="header-anchor">#</a> 消息过滤</h3><p>很多情况下，<strong>标签</strong> 只是用来简单的选择用户需要的消息，例如：</p><pre class="language-java"><code>
+DefaultMQPushConsumer consumer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQPushConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;CID_EXAMPLE&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+consumer<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">&quot;TOPIC&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;TAGA || TAGB || TAGC&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre><p>这个消费者就会接收到<code>TAGA</code>、<code>TAGB</code>、<code>TAGC</code>中的信息，但是只能允许一个消息有一个标签，不能支持其他的复杂业务场景，
+因此，我们可以使用<code>SQL</code>表达式来过滤消息</p><h3 id="原则"><a href="#原则" aria-hidden="true" class="header-anchor">#</a> 原则</h3><p><code>SQL</code> 的特点是可以通过一些消息中属性的计算。通过在<code>RocketMQ</code>中定义的语法，实现一些有意思的逻辑，例如：</p><pre class="language-text"><code>------------
+| message  |
+|----------|  a &gt; 5 AND b = 'abc'
+| a = 10   |  --------------------&gt; Gotten
+| b = 'abc'|
+| c = true |
+------------
+
+
+------------
+| message  |
+|----------|   a &gt; 5 AND b = 'abc'
+| a = 1    |  --------------------&gt; Missed
+| b = 'abc'|
+| c = true |
+------------
+</code></pre><h3 id="语法"><a href="#语法" aria-hidden="true" class="header-anchor">#</a> 语法</h3><p><code>RocketMQ</code> 只定义了一些简单的语法来支持这些特性，当然使用者也可以对其进行一些简单的扩展</p><ol><li>数字类型的比较,如 <code>&gt;</code>,<code>&gt;=</code>,<code>&lt;</code>,<code>&lt;=</code>,<code>BETWEEN</code>,<code>=</code></li><li>字符类型的比较，如 <code>=</code>,<code>&lt;&gt;</code>,<code>IN</code></li><li><code>IS NULL</code> 或 <code>IS NOT NULL</code></li><li>逻辑运算 <code>AND</code>,<code>OR</code>,<code>NOT</code></li></ol><h4 id="常量类型"><a href="#常量类型" aria-hidden="true" class="header-anchor">#</a> 常量类型</h4><ol><li>数字 ，<code>123</code>,<code>3.1415</code></li><li>字符 ，<code>'abc'</code> 这里必须要使用单引号</li><li><code>NULL</code> 特殊常量</li><li>布尔类型 <code>TRUE</code> 或者 <code>FALSE</code></li></ol><h3 id="使用限制"><a href="#使用限制" aria-hidden="true" class="header-anchor">#</a> 使用限制</h3><p>只有消费者在订阅消息的时候使用<code>SQL92</code></p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token keyword">final</span> String topic<span class="token punctuation">,</span> <span class="token keyword">final</span> MessageSelector messageSelector<span class="token punctuation">)</span>
+</code></pre><h3 id="生产者范例"><a href="#生产者范例" aria-hidden="true" class="header-anchor">#</a> 生产者范例</h3><p>消息生产者可以在发送消息的时候通过<code>putUserProperty</code>放置一些属性</p><pre class="language-java"><code>
+DefaultMQProducer producer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token string">&quot;please_rename_unique_group_name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+Message msg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span><span class="token punctuation">,</span>
+    tag<span class="token punctuation">,</span>
+    <span class="token punctuation">(</span><span class="token string">&quot;Hello RocketMQ &quot;</span> <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>RemotingHelper<span class="token punctuation">.</span>DEFAULT_CHARSET<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 设置属性</span>
+msg<span class="token punctuation">.</span><span class="token function">putUserProperty</span><span class="token punctuation">(</span><span class="token string">&quot;a&quot;</span><span class="token punctuation">,</span> String<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+SendResult sendResult <span class="token operator">=</span> producer<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+producer<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre><h3 id="消费者范例"><a href="#消费者范例" aria-hidden="true" class="header-anchor">#</a> 消费者范例</h3><p>消费者在接收消息的时候可以使用<code>MessageSelector.bySql</code>来进行消息的过滤</p><pre class="language-java"><code>DefaultMQPushConsumer consumer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQPushConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;please_rename_unique_group_name_4&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 只有订阅的消息包含属性 a, 并且 a &gt;=0 and a &lt;= 3</span>
+consumer<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span><span class="token punctuation">,</span> MessageSelector<span class="token punctuation">.</span><span class="token function">bySql</span><span class="token punctuation">(</span><span class="token string">&quot;a between 0 and 3&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+consumer<span class="token punctuation">.</span><span class="token function">registerMessageListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">MessageListenerConcurrently</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> ConsumeConcurrentlyStatus <span class="token function">consumeMessage</span><span class="token punctuation">(</span>List<span class="token generics function"><span class="token punctuation">&lt;</span>MessageExt<span class="token punctuation">&gt;</span></span> msgs<span class="token punctuation">,</span> ConsumeConcurrentlyContext context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> ConsumeConcurrentlyStatus<span class="token punctuation">.</span>CONSUME_SUCCESS<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+consumer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre></div><!----><div class="content page-nav"><p class="inner"><span class="prev">
+        ← <a href="/rocketmq-doc-cn/user-guide/batch-example.html" class="prev">
+          消息批处理
+        </a></span><!----></p></div></div></div></div>
+    <script src="/rocketmq-doc-cn/assets/js/4.a33cbc1b.js" defer></script><script src="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" defer></script>
+  </body>
+</html>

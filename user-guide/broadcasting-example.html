@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Apache RocketMQ | 广播</title>
+    
+    
+    <link rel="preload" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css" as="style"><link rel="preload" href="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" as="script"><link rel="preload" href="/rocketmq-doc-cn/assets/js/5.640eb283.js" as="script"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/1.479f88f1.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/2.6375ad30.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/3.6887b212.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/4.a33cbc1b.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/0.17fe6cb5.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/6.efdd77ba.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/7.2a416308.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/8.d8dfca2d.js">
+    <link rel="stylesheet" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/rocketmq-doc-cn/" class="router-link-active"><!----><span class="site-name">
+      Apache RocketMQ
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><!----></div></header><div class="sidebar"><!----><ul class="sidebar-links"><li><div class="sidebar-group first collapsable"><p class="sidebar-heading open"><span>用户指南</span><span class="arrow up"></span></p><ul class="sidebar-group-items"><li><a href="/rocketmq-doc-cn/user-guide/Why.html" class="sidebar-link">Why RocketMQ</a></li><li><a href="/rocketmq-doc-cn/user-guide/quick-start.html" class="sidebar-link">快速入门</a></li><li><a href="/rocketmq-doc-cn/user-guide/simple-example.html" class="sidebar-link">简单范例</a></li><li><a href="/rocketmq-doc-cn/user-guide/order-example.html" class="sidebar-link">有序消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/broadcasting-example.html" class="active sidebar-link">广播</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/rocketmq-doc-cn/user-guide/schedule-example.html" class="sidebar-link">延时消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/batch-example.html" class="sidebar-link">消息批处理</a></li><li><a href="/rocketmq-doc-cn/user-guide/filter-example.html" class="sidebar-link">消息过滤</a></li></ul></div></li></ul></div><div class="page"><div class="content"><h3 id="广播"><a href="#广播" aria-hidden="true" class="header-anchor">#</a> 广播</h3><h4 id="什么是广播"><a href="#什么是广播" aria-hidden="true" class="header-anchor">#</a> 什么是广播</h4><p>广播是将针对一个主题，将消息发送给它所有的订阅者，如果想要让某一个主题的所有订阅者都能收到消息，广告是非常好的选择</p><p>生产者代码</p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BroadcastProducer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        DefaultMQProducer producer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token string">&quot;ProducerGroupName&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            Message msg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span><span class="token punctuation">,</span>
+                <span class="token string">&quot;TagA&quot;</span><span class="token punctuation">,</span>
+                <span class="token string">&quot;OrderID188&quot;</span><span class="token punctuation">,</span>
+                <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>RemotingHelper<span class="token punctuation">.</span>DEFAULT_CHARSET<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            SendResult sendResult <span class="token operator">=</span> producer<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%s%n&quot;</span><span class="token punctuation">,</span> sendResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        producer<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</code></pre><p>消费者代码</p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BroadcastConsumer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        DefaultMQPushConsumer consumer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQPushConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;example_group_name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        consumer<span class="token punctuation">.</span><span class="token function">setConsumeFromWhere</span><span class="token punctuation">(</span>ConsumeFromWhere<span class="token punctuation">.</span>CONSUME_FROM_FIRST_OFFSET<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">//set to broadcast mode</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setMessageModel</span><span class="token punctuation">(</span>MessageModel<span class="token punctuation">.</span>BROADCASTING<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        consumer<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;TagA || TagC || TagD&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        consumer<span class="token punctuation">.</span><span class="token function">registerMessageListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">MessageListenerConcurrently</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> ConsumeConcurrentlyStatus <span class="token function">consumeMessage</span><span class="token punctuation">(</span>List<span class="token generics function"><span class="token punctuation">&lt;</span>MessageExt<span class="token punctuation">&gt;</span></span> msgs<span class="token punctuation">,</span>
+                ConsumeConcurrentlyContext context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&quot; Receive New Messages: &quot;</span> <span class="token operator">+</span> msgs <span class="token operator">+</span> <span class="token string">&quot;%n&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> ConsumeConcurrentlyStatus<span class="token punctuation">.</span>CONSUME_SUCCESS<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        consumer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;Broadcast Consumer Started.%n&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</code></pre></div><!----><div class="content page-nav"><p class="inner"><span class="prev">
+        ← <a href="/rocketmq-doc-cn/user-guide/order-example.html" class="prev">
+          有序消息
+        </a></span><span class="next"><a href="/rocketmq-doc-cn/user-guide/schedule-example.html">
+          延时消息
+        </a> →
+      </span></p></div></div></div></div>
+    <script src="/rocketmq-doc-cn/assets/js/5.640eb283.js" defer></script><script src="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Apache RocketMQ | 简单范例</title>
+    
+    
+    <link rel="preload" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css" as="style"><link rel="preload" href="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" as="script"><link rel="preload" href="/rocketmq-doc-cn/assets/js/0.17fe6cb5.js" as="script"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/5.640eb283.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/1.479f88f1.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/2.6375ad30.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/3.6887b212.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/4.a33cbc1b.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/6.efdd77ba.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/7.2a416308.js"><link rel="prefetch" href="/rocketmq-doc-cn/assets/js/8.d8dfca2d.js">
+    <link rel="stylesheet" href="/rocketmq-doc-cn/assets/css/9.styles.94391511.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/rocketmq-doc-cn/" class="router-link-active"><!----><span class="site-name">
+      Apache RocketMQ
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><!----></div></header><div class="sidebar"><!----><ul class="sidebar-links"><li><div class="sidebar-group first collapsable"><p class="sidebar-heading open"><span>用户指南</span><span class="arrow up"></span></p><ul class="sidebar-group-items"><li><a href="/rocketmq-doc-cn/user-guide/Why.html" class="sidebar-link">Why RocketMQ</a></li><li><a href="/rocketmq-doc-cn/user-guide/quick-start.html" class="sidebar-link">快速入门</a></li><li><a href="/rocketmq-doc-cn/user-guide/simple-example.html" class="active sidebar-link">简单范例</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/rocketmq-doc-cn/user-guide/order-example.html" class="sidebar-link">有序消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/broadcasting-example.html" class="sidebar-link">广播</a></li><li><a href="/rocketmq-doc-cn/user-guide/schedule-example.html" class="sidebar-link">延时消息</a></li><li><a href="/rocketmq-doc-cn/user-guide/batch-example.html" class="sidebar-link">消息批处理</a></li><li><a href="/rocketmq-doc-cn/user-guide/filter-example.html" class="sidebar-link">消息过滤</a></li></ul></div></li></ul></div><div class="page"><div class="content"><h3 id="简单消息范例"><a href="#简单消息范例" aria-hidden="true" class="header-anchor">#</a> 简单消息范例</h3><p>使用<code>RocketMQ</code>发送消息有三种方式</p><ul><li>同步可靠</li><li>异步可靠</li><li>单向传输</li></ul><p>接下来通过代码示例来介绍这三种方式，我们可以根据这三种范例来选择适合自己业务需要的方式</p><h4 id="同步可靠传输"><a href="#同步可靠传输" aria-hidden="true" class="header-anchor">#</a> 同步可靠传输</h4><p>同步可靠传输被用于大量的业务场景中，如重要的消息提醒、短信提醒、短信营销系统等</p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SyncProducer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment">//使用producer组名初始化一个producer实例</span>
+        DefaultMQProducer producer <span class="token operator">=</span> <span class="token keyword">new</span>
+            <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token string">&quot;please_rename_unique_group_name&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//启动实例</span>
+        producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">//创建一个消息实例, 指定主题、标签、消息体.</span>
+            Message msg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span> <span class="token comment">/* 消息主题 */</span><span class="token punctuation">,</span>
+                <span class="token string">&quot;TagA&quot;</span> <span class="token comment">/* 消息标签 */</span><span class="token punctuation">,</span>
+                <span class="token punctuation">(</span><span class="token string">&quot;Hello RocketMQ &quot;</span> <span class="token operator">+</span>
+                    i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>RemotingHelper<span class="token punctuation">.</span>DEFAULT_CHARSET<span class="token punctuation">)</span> <span class="token comment">/* 消息体 */</span>
+            <span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//把消息发送到brokers中的一个broker</span>
+            SendResult sendResult <span class="token operator">=</span> producer<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%s%n&quot;</span><span class="token punctuation">,</span> sendResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment">//如果这个producer不再使用，将其关闭</span>
+        producer<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="异步可靠传输"><a href="#异步可靠传输" aria-hidden="true" class="header-anchor">#</a> 异步可靠传输</h4><p>异步可靠传输大量的用于对响应时间敏感的业务场景中</p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AsyncProducer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment">//使用producer组名初始化一个producer实例</span>
+        DefaultMQProducer producer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token string">&quot;ExampleProducerGroup&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//启动实例</span>
+        producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        producer<span class="token punctuation">.</span><span class="token function">setRetryTimesWhenSendAsyncFailed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">final</span> <span class="token keyword">int</span> index <span class="token operator">=</span> i<span class="token punctuation">;</span>
+                <span class="token comment">//创建一个消息实例, 指定主题、标签、消息体.</span>
+                Message msg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span><span class="token punctuation">,</span>
+                    <span class="token string">&quot;TagA&quot;</span><span class="token punctuation">,</span>
+                    <span class="token string">&quot;OrderID188&quot;</span><span class="token punctuation">,</span>
+                    <span class="token string">&quot;Hello world&quot;</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>RemotingHelper<span class="token punctuation">.</span>DEFAULT_CHARSET<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                producer<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SendCallback</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token annotation punctuation">@Override</span>
+                    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onSuccess</span><span class="token punctuation">(</span>SendResult sendResult<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%-10d OK %s %n&quot;</span><span class="token punctuation">,</span> index<span class="token punctuation">,</span>
+                            sendResult<span class="token punctuation">.</span><span class="token function">getMsgId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                    <span class="token annotation punctuation">@Override</span>
+                    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onException</span><span class="token punctuation">(</span>Throwable e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%-10d Exception %s %n&quot;</span><span class="token punctuation">,</span> index<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment">//如果这个producer不再使用，将其关闭</span>
+        producer<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="单向传输"><a href="#单向传输" aria-hidden="true" class="header-anchor">#</a> 单向传输</h4><p>单向传输被用在可靠稳定的业务中，例如 日志收集</p><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OnewayProducer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception<span class="token punctuation">{</span>
+        <span class="token comment">//使用producer组名初始化一个producer实例</span>
+        DefaultMQProducer producer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token string">&quot;ExampleProducerGroup&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//启动实例</span>
+        producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">//创建一个消息实例, 指定主题、标签、消息体.</span>
+            Message msg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span><span class="token string">&quot;TopicTest&quot;</span> <span class="token comment">/* 主题 */</span><span class="token punctuation">,</span>
+                <span class="token string">&quot;TagA&quot;</span> <span class="token comment">/* 标签 */</span><span class="token punctuation">,</span>
+                <span class="token punctuation">(</span><span class="token string">&quot;Hello RocketMQ &quot;</span> <span class="token operator">+</span>
+                    i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>RemotingHelper<span class="token punctuation">.</span>DEFAULT_CHARSET<span class="token punctuation">)</span> <span class="token comment">/* 消息体*/</span>
+            <span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//把消息发送到brokers中的一个broker</span>
+            producer<span class="token punctuation">.</span><span class="token function">sendOneway</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token punctuation">}</span>
+        <span class="token comment">//如果这个producer不再使用，将其关闭</span>
+        producer<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><!----><div class="content page-nav"><p class="inner"><span class="prev">
+        ← <a href="/rocketmq-doc-cn/user-guide/quick-start.html" class="prev">
+          快速入门
+        </a></span><span class="next"><a href="/rocketmq-doc-cn/user-guide/order-example.html">
+          有序消息
+        </a> →
+      </span></p></div></div></div></div>
+    <script src="/rocketmq-doc-cn/assets/js/0.17fe6cb5.js" defer></script><script src="/rocketmq-doc-cn/assets/js/app.8bfeae5e.js" defer></script>
+  </body>
+</html>
